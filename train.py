@@ -27,17 +27,17 @@ class lin_reg:
 		self.loss_acc = []
 
 
-	""" Prints the current theta values and loss """
-	def print_state(self, epoch):
-		print(
-			'Epoch\t{}\nθ0\t{}\nθ1\t{}\nLoss\t{}\n'
-				.format(
-					epoch,
-					(self.theta0 - self.theta1 * self.mean_mileage / self.std_dev_mileage),
-					(self.theta1 / self.std_dev_mileage),
-					self.loss_acc[-1]
-				)
-		)
+	# """ Prints the current theta values and loss in terminal"""
+	# def print_state(self, epoch):
+	# 	print(
+	# 		'Epoch\t{}\nθ0\t{}\nθ1\t{}\nLoss\t{}\n'
+	# 			.format(
+	# 				epoch,
+	# 				(self.theta0 - self.theta1 * self.mean_mileage / self.std_dev_mileage),
+	# 				(self.theta1 / self.std_dev_mileage),
+	# 				self.loss_acc[-1]
+	# 			)
+	# 	)
 
 
 	""" Calculates the errors for the current theta values
@@ -69,33 +69,19 @@ class lin_reg:
 		max_epoch = 1000
 		weighted_learning_rate = self.learning_rate / self.n
 
-		# # Plot evolution of hypothesis
-		# plt.figure()
-		# plt.ion()
-		# plt.scatter(self.mileages, self.prices, color='blue')
-
-		# Main loop
+		# Learning loop
 		for epoch in range(max_epoch + 1):
 			t0_error, t1_error, loss = self.calculate_errors()
 			self.theta0 -= weighted_learning_rate * t0_error
 			self.theta1 -= weighted_learning_rate * t1_error
 			self.loss_acc.append(loss)
 
+			# if we have done more than 2 loops and the last 2 loops rounded are equal it means we came to the convergence so we stop the loop
 			if len(self.loss_acc) > 1 and round(self.loss_acc[-1], 7) == round(self.loss_acc[-2], 7):
 				break
 
-			if (epoch % (max_epoch / 1000)) == 0:
-				self.print_state(epoch)
-
-		# 	# Plot hypothesis
-		# 	plt.plot(
-		# 		[min(self.mileages), max(self.mileages)],
-		# 		[estimate_price(self.theta0, self.theta1, min(self.mileages)), estimate_price(self.theta0, self.theta1, max(self.mileages))],
-		# 		'r'
-		# 	)
-		# 	plt.pause(0.1)
-
-		# plt.ioff()
+			# if (epoch % (max_epoch / 1000)) == 0:
+			# 	self.print_state(epoch)
 
 		# Unscale thetas
 		self.theta0 -= (self.theta1 * self.mean_mileage / self.std_dev_mileage)
@@ -105,8 +91,7 @@ class lin_reg:
 		loss_progression(self)
 
 
-	""" Stores the theta values in the thetas file
-	"""
+	""" Stores the theta values in the thetas file """
 	def store_thetas(self):
 		try:
 			output = open('thetas', 'w')
